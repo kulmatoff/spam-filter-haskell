@@ -1,2 +1,30 @@
 spam.txt
 ham.txt
+
+# Haskell
+*.hi
+*.o
+*.dyn_o
+*.dyn_hi
+*.prof
+*.aux
+*.hp
+*.eventlog
+
+# Stack
+.stack-work/
+dist/
+dist-newstyle/
+
+# Cabal files
+*.egg-info/
+cabal.project.local
+cabal.project.local~*
+
+# Editors
+*.swp
+*~
+*.sublime-workspace
+*.sublime-project
+.idea/
+.vscode/
