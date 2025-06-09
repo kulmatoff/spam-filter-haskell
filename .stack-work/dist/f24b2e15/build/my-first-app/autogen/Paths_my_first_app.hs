@@ -47,7 +47,7 @@ getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: 
 
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 bindir     = "C:\\Users\\User\\Desktop\\haskell\\my-first-app\\.stack-work\\install\\c876d187\\bin"
-libdir     = "C:\\Users\\User\\Desktop\\haskell\\my-first-app\\.stack-work\\install\\c876d187\\lib\\x86_64-windows-ghc-9.8.4\\my-first-app-0.1.0.0-1ZPRd4ukUA0AuseWRLcf4o-my-first-app"
+libdir     = "C:\\Users\\User\\Desktop\\haskell\\my-first-app\\.stack-work\\install\\c876d187\\lib\\x86_64-windows-ghc-9.8.4\\my-first-app-0.1.0.0-JbCUccQjeFKBFRxDn7UUFK-my-first-app"
 dynlibdir  = "C:\\Users\\User\\Desktop\\haskell\\my-first-app\\.stack-work\\install\\c876d187\\lib\\x86_64-windows-ghc-9.8.4"
 datadir    = "C:\\Users\\User\\Desktop\\haskell\\my-first-app\\.stack-work\\install\\c876d187\\share\\x86_64-windows-ghc-9.8.4\\my-first-app-0.1.0.0"
 libexecdir = "C:\\Users\\User\\Desktop\\haskell\\my-first-app\\.stack-work\\install\\c876d187\\libexec\\x86_64-windows-ghc-9.8.4\\my-first-app-0.1.0.0"
