@@ -4,17 +4,16 @@ import Data.Map.Strict (Map, fromListWith, size)
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 import Data.Char
-import Data.Maybe (fromMaybe)
 
-type WordCounts = Map String Int
+type TermFrequency = Map String Int
 
--- DF (Documents Frequence) needed to calculate IDF.
+-- DF (Documents Frequency) needed to calculate IDF.
 -- Basically, it shows frequency of a Word across the Documents.
 -- In compare with TF, that shows frequency across all the Words.
-type DocumentCounts = Map String Int
+type DocumentFrequency = Map String Int
 
-type ClassDF = (DocumentCounts, Int)
-type ClassModel = (WordCounts, Int)
+type ClassDF = (DocumentFrequency, Int)
+type ClassModel = (TermFrequency, Int)
 
 -- base functions
 tokenize :: String -> [String] -- Converts whole text into the list of separate low-case words (tokens)
@@ -27,8 +26,8 @@ train messages =
 
   in (freqs, length tokens)
 
-df_train :: [String] -> ClassDF -- calculating in how many documents the word occurs
-df_train documents = 
+dfTrain :: [String] -> ClassDF -- calculating in how many documents the word occurs
+dfTrain documents = 
   let 
     freq_map = [Map.fromListWith (+) [(word, 1) | word <- (Set.toList $ Set.fromList $ tokenize x)] | x <- documents]
     summed_freq_map = Map.unionsWith (+) freq_map
@@ -43,12 +42,12 @@ logProb (wc, total) (df_map, total_docs) word =
       idf_part = log (fromIntegral(total_docs + 1) / fromIntegral(df_count + 1))
   in log tf_part * idf_part
 
-classify :: ClassModel -> ClassModel -> ClassDF -> String -> [(String, Double)]
+classify :: ClassModel -> ClassModel -> ClassDF -> String -> String
 classify spamModel hamModel doc_count msg =
-  let words = tokenize msg
-      spamScore = sum [logProb spamModel doc_count w | w <- words]
-      hamScore = sum [logProb hamModel doc_count w | w <- words]
-  in [("spam", spamScore), ("ham", hamScore)]
+  let tokens = tokenize msg
+      spamScore = sum [logProb spamModel doc_count w | w <- tokens]
+      hamScore = sum [logProb hamModel doc_count w | w <- tokens]
+  in if spamScore > hamScore then "spam" else "ham"
 
 sortByValue :: (Ord a) => [(String, a)] -> [(String, a)]
 sortByValue [] = []
@@ -59,6 +58,15 @@ sortByValue (mid:xs) = sortByValue lesser ++ [mid] ++ sortByValue greater
     lesser = filter (\n -> snd n < middle_val) xs
     greater = filter (\n -> snd n >= middle_val) xs
 
+getMetrics :: (String -> Bool) -> [String] -> [String] -> Double
+getMetrics binaryClassifier spamList hamList =
+  let true_positive = sum [fromEnum $ not (binaryClassifier msg) | msg <- spamList]
+      false_positive = sum [fromEnum $ binaryClassifier msg | msg <- spamList]
+      true_negative = sum [fromEnum $ not (binaryClassifier msg) | msg <- hamList]
+      false_negative = sum [fromEnum $ binaryClassifier msg | msg <- hamList]
+      acc = fromIntegral(true_positive + true_negative) / fromIntegral(length (spamList ++ hamList))
+  in acc
+
 -- Spam filter in action                                                                                                                                                                                                                                                     
 
 main :: IO ()
@@ -68,11 +76,17 @@ main = do
 
   let allDocsTrain = spamTrain ++ hamTrain
    
-  testMsg <- getLine
+  -- testMsg <- getLine
   let spamModel = train spamTrain
       hamModel = train hamTrain
-      dfModel = df_train allDocsTrain
+      dfModel = dfTrain allDocsTrain
+  
+  let get_class msg = classify spamModel hamModel dfModel msg == "spam"
+      acc = getMetrics get_class spamTrain hamTrain
+
+  
+  print acc
     
   -- print $ take 100 $ reverse $ sortByValue $ Map.toList $ fst hamModel
 
-  print $ classify spamModel hamModel dfModel testMsg
+  -- print $ classify spamModel hamModel dfModel testMsg
